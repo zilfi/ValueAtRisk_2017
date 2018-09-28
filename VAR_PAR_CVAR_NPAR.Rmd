@@ -1,0 +1,60 @@
+---
+title: "VAR_par_nopar"
+author: "LZ"
+date: "April 7, 2017"
+output: html_document
+---
+Импорт файла с данными:
+```{r}
+table_6<- read.csv("table (6).csv")
+head(table_6, 15)
+``` 
+
+
+Зададим значения n равное длинне ряда цен и первоначальное значение для доходности и индекса i для цикла:
+
+
+```{r}
+n=length(table_6$Close)
+dji<-1
+i<-1
+n
+```
+
+Создадим ряд из доходностей применяя оператор цикла for:
+
+```{r}
+for (i in 1:n)
+{dji[i]<-log(table_6$Close[i]/table_6$Close[i+1])
+i<-i+1}
+dji
+```
+
+Для <h4>параметрического</h4> VaR-а надо расчитать среднее значение и стандатное отклонение ряда
+
+```{r}
+Mean<-mean(dji, na.rm = TRUE)
+Stdev<-sqrt(var(dji,na.rm = TRUE))
+VaR_Par<-qnorm(0.07,Mean,Stdev) #квантиль нормального распределения
+VaR_Par
+```
+
+Для <h4>параметрического</h4> CVaR-а создадим множество состоящий из доходностей, находящие левее VaR-а:
+
+```{r}
+
+CVar_Par<-mean(subset(dji, dji < VaR_Par))
+CVar_Par
+```
+
+Для <h4>непараметрического</h4> VaR-а и CVaR
+
+```{r}
+dji1=sort(dji)
+VaR_npar=dji1[n/20]
+VaR_npar
+CVaR_npar=mean(dji1[1:n/20])
+CVaR_npar
+```
+
+<h4> УРА! </h4>
